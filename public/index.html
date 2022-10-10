@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    
+    <!-- CSS only -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-Zenh87qX5JnK2Jl0vWa8Ck2rdkQ2Bzep5IDxbcnCeuOxjzrPF/et3URy9Bv1WTRi" crossorigin="anonymous">
+    
+    <title>Google Sign In</title>
+</head>
+<body class="container">
+
+    <div class="row mt-5">
+        <div class="col-sm-6">
+            <h3>Google Sign-in</h3>
+            <hr>
+            <br>
+            <div id="g_id_onload"
+                data-client_id="84016955149-jtsvmsarpt7p6morrc3d2sff63va64vv.apps.googleusercontent.com"
+                data-auto_prompt="false"
+                data-callback="handleCredentialResponse">
+            </div>
+            <div class="g_id_signin"
+                data-type="standard"
+                data-size="large"
+                data-theme="outline"
+                data-text="sign_in_with"
+                data-shape="rectangular"
+                data-logo_alignment="left">
+            </div>
+            <br>
+            <button id="google-signOut"> Sign Out </button>
+        </div>
+
+        <div class="col-sm-6">
+
+        </div>
+    </div>
+
+    <script src="./socket.io/socket.io.js"></script>
+    <script src="./js/chat.js"></script>
+
+    <script src="https://accounts.google.com/gsi/client" async defer></script>
+
+    
+
+    <script>
+        function handleCredentialResponse(response) {
+            // Google Token: ID_TOKEN
+            //console.log('id_token: ' + response.credential);
+            const body = { id_token: response.credential }
+
+            fetch( window.location.hostname.includes('localhost') ? 'http://localhost:8080/api/auth/google' : 'https://restserver-nodejs-fujarte.herokuapp.com/api/auth/google', {
+                // Configurar el método de la peticion ya que por defecto es GET
+                method: 'POST',
+                headers: {
+                    'Content-Type':'application/json'
+                },
+                body: JSON.stringify(body)
+            })
+                .then( resp => resp.json() )        //Serializar el readable stream
+                .then( resp => {
+                    console.log( resp )
+                    localStorage.setItem('email', resp.usuario.correo)          // Almacenar localmente el correo para realizar el Sign Out
+                })
+                .catch( console.warn );
+        }
+
+        const button = document.getElementById("google-signOut");
+        button.onclick = () => {
+            console.log( google.accounts.id );
+            google.accounts.id.disableAutoSelect();
+
+            // Sign out. Revocar mediante el correo almacenado localmente, se borra el registro y se recarga la página
+            google.accounts.id.revoke( localStorage.getItem('email'), done => {
+                localStorage.clear();
+                location.reload();
+            });
+        }
+
+    </script>
+
+    
+      
+</body>
+</html>
