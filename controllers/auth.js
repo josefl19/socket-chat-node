@@ -96,4 +96,16 @@ const googleSignIn = async (req, res = response) => {
     }
 }
 
-export { login, googleSignIn }
+const renovarToken = async (req, res = response) => {
+    const usuario = req.usuarioAuth;                // Datos obtenidos por middleware validar-jwt
+
+    // Generar nuevo token
+    const token = await generarJWT( usuario.id );
+
+    res.json({
+        usuario,
+        token
+    })
+}
+
+export { login, googleSignIn, renovarToken }
