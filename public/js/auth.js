@@ -24,6 +24,7 @@ formulario.addEventListener('submit', ev => {
         }
 
         localStorage.setItem('token', token)
+        window.location = 'chat.html'
     })
     .catch( err => {
         console.log(err);
@@ -46,6 +47,7 @@ function handleCredentialResponse(response) {
         .then( resp => resp.json() )        //Serializar el readable stream
         .then( ({ token }) => {
             localStorage.setItem('token', token)          // Almacenar localmente el correo para realizar el Sign Out
+            window.location = 'chat.html'
         })
         .catch( console.warn );
 }
