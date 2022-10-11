@@ -48,8 +48,8 @@ const conectarSocket = async () => {
 
     socket.on('recibir-mensajes', listarMensajes);
 
-    socket.on('mensaje-privado', () => {
-        
+    socket.on('mensaje-privado', (payload) => {
+        console.log('Privado: ', payload);
     });
 
     socket.on('usuarios-activos', listarUsuarios);
